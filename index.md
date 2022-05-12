@@ -1,0 +1,536 @@
+---
+author: Michael DeCrescenzo
+layout: single
+categories:
+tags:
+- bayes
+title: |
+    Replication archives should be more usable.
+subtitle: |
+   Theses on software design and norms in quantitative social science 
+excerpt: |
+date: "2022-05-07"
+draft: true
+format: hugo
+---
+
+
+
+## Why do so many research projects' replication archives hurt?
+
+My mind has been on **replication archives** lately. I often go digging
+in other peoples' projects for data to practice some new statistical
+skill or another. And I have been digging in *my own* projects lately to
+refactor some code for a dormant academic project. In both of these
+situations I am interfacing with some else's code (me today ≠ me in the
+past), and in both situations I am having a bad time.
+
+The academic community has been increasingly interested in replication
+archives since they realized that a lot of public research is, um,
+systematically untrustworthy. Formal requirements (from journals) and
+informal pressures (from other researchers) in academia are increasingly
+requiring authors to prepare these repositories for new projects, which
+seems good on the whole. But if you ever go digging in these
+republication archives, you quickly realize that just because authors
+provide data and code doesn't mean that the experience is all that
+helpful. But why? You can see the data, maybe the code runs without
+errors...What's the problem?
+
+My main argument is that the code was not really designed to be
+understood or manipulated by other people. If it were, the code would
+not look the way it does.
+
+Now, I'm not an academic anymore, so dont have much stake in these
+issues anymore. But I do write quantitative research code in a
+collaborative environment at work all the time, with the intention that
+my code will be consumed and repurposed by others. As it turns out,
+trying to persuade others to put your code into practice changes how you
+write that code, improves the reliability of your work, and has positive
+effects on the community in which your code is deliberated and consumed.
+This blog post will attempt to collect a few thoughts about discrete,
+attainable changes that I think would be beneficial for academic
+researchers to consider as they write research code and share it online.
+I start with some broad and moralistic comments (sorry), but I get more
+concrete as I go.
+
+## Getting oriented
+
+### This isn't about "good" code vs. "bad" code.
+
+Like you, I don't have a defensible theory about what makes code Good
+for any enduring understanding of Good. "Good" code seems like a
+contested and highly contextual idea. Code may have "good properties",
+but certain features of code design also present important trade-offs,
+so goodness is perhaps only meaningful relative to our goals. So maybe
+we should start by talking about what we want academic code to do for
+us.
+
+### What are the goals of academic research code?
+
+And what are the goals of the *replication archive* as its own entity? I
+will discuss two broad models for code repositories, an *archive* model
+and a *product* model. I am making these up as I go, but you will get
+the idea.
+
+**The archive model.** This is what most academic repositories are doing
+right now, I would guess. We call these code repositories "replication
+archives" because that's what we think we want them to do: replicate and
+archive. The model is focused on the "validity" of the code---does it
+correctly reproduce the results in the writing, tables, and figures
+(replication) in a robust and enduring way (archiving).
+
+These are important goals, but focusing exclusively on them has some
+predictable side-effects. The repositories end up serving as an audit
+trail for the paper, so the code is designed around the *rhetoric of the
+paper* instead of around the operations that the analysis must
+undertake. We see files named things like `01_setup`, `02_clean-data`,
+`03_model`, `04_tables-figs`, `05_robustness` and so on). Even supposing
+that all of the code may run just fine, all we can really do with the
+code is rebuild the paper and nothing else. If you could draw a web of
+all the interlocking pieces of this project, it would be a long, single
+strand from start to finish, highly dependent from one script to the
+next (perhaps intended to be run in the same R/Python session), with no
+feasible way to swap out any components for other components or modify
+them in isolation. And crucially, if we wanted to use the data or some
+of the code from this project for some other purpose, we may have to
+mangle the project to extract the components we wanted.
+
+**The product model.** The product model organizes its code as if to
+offer it as a product for someone else to use. The code is a key part of
+the research package, and researchers care that it is a good experience,
+just as they care about the quality of their writing. An important
+assertion here is that there is value in the code even if the paper did
+not exist. If a project proposes a method to measure or estimate a key
+variable, those methods are valuable outside of the context of the
+paper, so part of the *product* of the project is to make these tools
+available and usable for other researchers to benefit from. Projects
+that propose a new model make this model available for others to use
+with a practical interface. Indeed, there may be a notion of *interface*
+as distinct from *infrastructure*; the code that drives the project at a
+high level is uniform and understandable, and the ugly code that does
+heavy lifting is encapsulated away from the interface. And better yet,
+the important infracture pieces are modularly designed: they may combine
+at the locus of the project, but the components can exist without
+reference to one another and could be exchanged for other components
+that perform similar functions.
+
+### Increasing the amount of shared / re-used code would be good for credibility and knowledge accumulation
+
+First, posting code is not the same as making it usable. I suspect many
+social scientists put code online without really wanting others to dig
+into it. But there are real services that academics could provide for
+each other more regularly if they were more generous with their code.
+Political scientists in particular use a lot of the same data sources
+and do a lot of similar transformations on it, but why all the wasted
+effort? I quite admire Steven V. Miller's
+[`peacesciencer`](http://svmiller.com/peacesciencer/ms.pdf) package for
+R, a set of tools whose rationale seems to be that there's no sense in
+having everybody duplicate each other's work to shape the data into
+common formats for analysis in political science. I gotta say, I agree.
+
+But it doesn't stop at broad-based datasets or data-shaping tools. Think
+about every paper you have ever read that proposes a new way to measure
+something. Did those authors provide a code module to do the appropriate
+calculations on new data of appropriate shape? Did those authors provide
+an interface for validating these measures against alternatives? I
+suspect that in most cases the answer is no. The authors may put *their*
+code online, but it isn't online *for you*.
+
+I don't want to point fingers only, so I will use some examples from my
+own academic work to show that I, too, wasn't thinking enough about
+this. In my dissertation, I built a group-level measurement model to
+estimate latent political ideology in partisan groups at subnational
+units of aggregation, and I wrote a series of Stan files to iterate on a
+few approaches to it. Other projects I have seen before and after I
+finished my thesis have used similar models. Did I package my models
+into a tool that others could use? No, I did not. I also implemented a
+reweighting method for aggregated survey that I first saw in a paper
+from nearly a decade ago. This is probably a pretty broadly applicable
+correction for similar data, but did I provide a public tool for others
+to apply the same calculations on data that wasn't exactly my own? Nah.
+I designed a Bayesian implementation of the [Acharya, Blackwell, and Sen
+formulation of sequential-*g*
+estimator](https://www.cambridge.org/core/journals/american-political-science-review/article/abs/explaining-causal-findings-without-bias-detecting-and-assessing-direct-effects/D11BEB8666E913A0DCD7D0B9872F5D11),
+and I would even say I was pretty proud of it. But I wasn't proud enough
+to share a generic version that others could use and adapt for their
+purposes. You get the idea.
+
+It just makes me worry that when we advertise our work as tools that
+others could use, we do not really mean it. I worry that phrases like
+"We propose a method...", or "we provide an approach..." are only things
+we were trained to say to make it *sound* like we are contributing tools
+for the community. But we are not doing a very good job actually
+contributing the tools. The code that goes into the paper repository is
+for *ourselves*, because the goal is getting *our* paper over the finish
+line. The code is just another part of the publication game.
+
+There recently was a [post on the Gelman
+blog](https://statmodeling.stat.columbia.edu/2022/03/04/biology-as-a-cumulative-science-and-the-relevance-of-this-idea-to-replication/)
+that stuck out to me about cumulative science and re-using each other's
+work. Here is an excerpt that gives you the idea:
+
+> How could a famous study sit there for 20 years with nobody trying to
+> replicate it? \[...\] Pamela said this doesn't happen as often in
+> biology. Why? Because in biology, when one research team publishes
+> something useful, then other labs want to use it too. Important work
+> in biology gets replicated all the time---not because people want to
+> prove it's right, not because people want to shoot it down, not as
+> part of a "replication study," but just because they want to use the
+> method. So if there's something that everybody's talking about, and it
+> doesn't replicate, word will get out.
+>
+> The way she put it is that biology is a cumulative science.
+
+Thinking about how this applies to our code, it is clear that there is
+more than a vague moral value to posting usable code for others. There
+is scientific value as well. And it is interesting to me that after all
+the commotion about replication and [running code without
+errors](https://www.nature.com/articles/s41597-022-01143-6), there is
+comparatively little discussion about the scientific value of the code
+outside of the narrow, narrow context of the paper it is written for.
+(It's publication-brain if you ask me.)
+
+## What can be done?
+
+Now that I have complained and grandstanded, we can talk about
+recommendations. For the sake of keeping the discussion finite and
+digestible, I will focus on two concepts; interface and modularity.
+Interface refers to approaches that make your tools usable for others.
+Modularity helps organize your work for easier development (for your own
+benefit) and exporting (for others' benefit) of your work.
+
+### Interfaces for living projects, not memorials to dead projects
+
+Whenever I want to download a project's data and code, I *only* want to
+get it from a version control platform like Github. I want to fork the
+project, see the history, get the intended file structure, and maybe
+even contribute to the project by opening issues or pull requests. I
+[never](https://twitter.com/rmkubinec/status/1514142461949583361) want
+to go to Harvard Dataverse. I'm sure Dataverse was a great idea when it
+first hit the scene, but by today's standards, it feels like it is
+chasing yesterday's problems, like the issue of "pure replication". But
+I think the credibility problems in social science warrant more than
+old-world-style replication. We should be looking for platforms that
+accommodate and encourage sharing, re-use, mutual contribution, and
+stress-testing by others.
+
+### Interface vs. Infrastructure
+
+This is a pretty common distinction you hear about in software
+communities. It isn't much discussed in academic research circles.
+
+I will explain by way of example: Think about the `tidyverse` packages
+in R, or just `dplyr` and `tidyr` specifically. These packages provide
+an interface to useful data manipulations on data frames. That is, data
+frames and these operations on them are *abstractions* around which the
+interface is focused---an abstraction in the sense that the functions
+**do not have to know or care what is in those data frames** in order to
+operate on them. The packages provide a *uniform* interface; functions
+take a data frame as an input and return a data frame as an output, and
+their semantics are similar across functions. This makes the operations
+*composable*, which is jargon for "the operations can be reordered and
+combined to achieve powerful functionality". The same basic principles
+are true for other tools in the tidyverse like `stringr`, `forcats`,
+`purrr`, and so on. They employ different abstractions for data
+organized at different levels, but the emphasis on uniformity and
+composability is there.
+
+So that's the "interface" layer of some tidyverse tools. Now, what about
+the "infrastructure" that actually implements the functionality under
+the hood? Do you know *anything* about how these functions are actually
+implemented? And would it really matter if you did? The infrastructure
+isn't what you, the user, care about. What matters is that the tools
+provide a legible way to perform key tasks with your code without
+bogging you down in the implementation details.
+
+Compare this to the way we write research code. There is usually no
+distinction between interface and infrastructure whatsoever. A lot of
+the time, we keep all of our nasty and idiosyncratic data-cleaning code
+right next to our analysis and visualization. On a good day, we may
+smuggle the data-cleaning code into a different file, but that doesn't
+make a huge difference because the flow of the project is still mostly
+linear from raw data to analysis. The user cannot really avoid spending
+time in the darkest corners of the code.
+
+To be fair, it isn't necessary that an academic project's code base
+should be as gorgeous as the tidyverse. But there are probably some
+intertwined components that could be separated into interface and
+infrastructure layers somehow, and readers who really want to
+investigate the infrastructure are free to do so.[^1]
+
+Thinking again about a paper that proposes a new way to measure a key
+variable, or a new method to analyze some data: could those methods not
+be divided into an interface to access the method and an infrastructure
+that does the heavy lifting somewhere else? Wouldn't you be more likely
+to use and re-use a tool like that? Wouldn't it be more likely that if
+the method has a problem, we would be more likely to uncover that
+problem if people were able to use put the method into practice more
+easily? Wouldn't that look more like the iterative, communal scientific
+process that we wish we had?
+
+### Little functions (just not so many)
+
+One way to make an interface more legible to users is package annoying
+routines into descriptive functions that describe what you're
+accomplishing.
+
+Let's think about a halfway-concrete example. You have a dataset of
+administrative data on many individuals, and the dataset has a field for
+individuals' names. Your task is to clean these names in some way.
+
+You choose to use some combination of regular expressions and `stringr`
+to do this. But how do you implement this operation in the code? One way
+is to create a new variable like...
+
+``` r
+new_df <- mutate(
+    df, 
+    name = 
+        str_replace(...[manipulation 1 here]...) |>
+        str_replace(...[manipulation 2 here]...) |>
+        [...]
+        str_replace(...[final manipulation here]...)
+)
+```
+
+...and this works *fine*. But if you wanted to change the way this
+name-cleaning is done, not only do you have to do surgery directly on a
+data pipeline, but you can't test your new implementation without
+re-running this mutate step over and over (which may be just one step of
+a multi-function pipe chain).
+
+What if, instead, you wrote a little function called `format_names` and
+buried your implementation in that function? Now your data pipeline
+looks like this...
+
+``` r
+new_df <- mutate(df, name = format_names(name))
+```
+
+...and if you need to change your implementation, you can change the
+definition of `format_names`[^2] wherever it lives without intervening
+on the entire pipeline directly.
+
+We face some trade-offs by doing this, however. Stringr functions are
+already abstractions: they don't know what your string is, and they
+don't care. All they know is that they have to do some operation to a
+string. The notion of "cleaning a name" is something that you, the
+author, are imposing on it. It is up to you whether encapsulating is
+worth the interface benefit, or if you would prefer to interact with
+more abstract functions directly.
+
+Another way to think about this is in imperative vs. declarative terms.
+Most data analysis code is implemented in an imperative framework: the
+code describes the steps that are being taken on the data. We could
+instead aim for a declarative implementation: the code describes what we
+want, not how we get there.
+
+Now imagine scaling up these ideas to more of the variables you need to
+make your modify. It's likely that many more of your data cleaning
+operations are conventional enough in your field that you can save them
+as little functions. Now your data pipeline is a small number of
+easy-to-read function calls, maybe a few filters and selects...much
+nicer than a 100-line, 20-stage pipeline of dplyr verbs that is not only
+fragile to intervene upon but also hard to read. Obviously you don't
+need a function for every one-off operation, but if you find yourself
+doing the same kind of data-cleaning tasks across projects, well,
+there's a reason why it feels repetitive.
+
+### More modules, fewer pipelines
+
+Something academic research projects are really lacking is modularity,
+the principle of keeping things separate, independent, and
+interchangeable.
+
+So far I haven't been kind to the idea that your code should be a
+"pipeline" for your data, and this is because pipelines are often
+antithetical to principled modularity. It is difficult at first to
+realize the drawbacks of pipeline organization because, especially with
+tidyverse tools, chaining many things together to do big things is the
+primary benefit. When `dplyr` and `tidyr` first start clicking for you,
+you immediately begin chaining tons of operations together to go from A
+to B without a ton of code. But as you iterate on the analysis, which
+requires breaking and changing things in your code, it can suddenly be
+very cumbersome to find and fix broken parts. This is because you have
+twisted all of the important steps together! You wrote the code in such
+a way that steps that do not depend on one another in principal have to
+be organized and executed in a strict order. And now the fix for one
+breakage leads you to break something else because the steps in your
+pipeline are too dependent on the exact configurations of the data in
+prior steps. It is just nice to avoid problems like this.
+
+And we might avoid them by trying to incorporate more modularity into
+our code. We should be asking ourselves questions like,
+
+-   What operation do I need to do here, regardless of what my
+    particular data look like?
+-   What can be separated? For instance, do I need the analysis of these
+    3 different data sources to happen in the same file? Or are they
+    unrelated to the point where the analyses don't have to be aware of
+    one another in any way?
+-   What can be encapsulated? Suppose I convince myself that the
+    analyses of my 3 different data sources don't have to be aware of
+    one another, but maybe there are some tools I can define that could
+    be useful in each analysis. Perhaps I should encapsulate those tools
+    under a separate file (read: a module!) and then import that module
+    whenever I need it.
+-   Relatedly, what can be *exported* to other files in this project, or
+    to other users who might want to use only that part? This is
+    probably helpful to remember for cleaned data, repeated data
+    manipulation tools, a new model that you build, and more.
+
+If more pieces of your project are separable, interchangeable, and
+exportable, it becomes much easier to share little pieces of your
+project with other researchers.
+
+### Show other people your code
+
+You learn a lot by having other people make suggestions to you about the
+way your code is structured. I suspect most academic projects, even
+those with multiple co-authors, don't feature much code criticism or
+review of any kind. Outsourcing code tasks to graduate students is great
+for developing their skills, but if you (the person reading this) are
+the veteran researcher, they would also benefit from your advice. The
+student and your project will be better for it.
+
+### Provide what you propose
+
+This is a section where I just reiterate this point again. If your
+analysis "proposes" a method, why not **provide** better tools for
+someone to implement it somewhere else?
+
+You can try to design the tools in your project as if your project is
+just one of many projects that could use that tool. This helps you
+separate the pieces of your project that are necessary for an end user
+(you, the paper writer, are an end user) from the pieces that are
+idiosyncratic to your particular paper.
+
+### Organization for others (and for you!)
+
+Focusing on interface, modules, and functions can be helpful for
+thinking about organization.
+
+We know that it is "good" for code to be organized. But it is easy to
+organize code in ineffective ways. Something we see a lot in academic
+code is an organizational structure that is perfectly *discernible* but
+not exactly *useful*. We can tell that things (like file layouts) are
+organized along some dimension, but that dimension might not help us
+understand or use the code. I myself have created plenty of impeccably
+organized but essentially useless code bases for anyone but myself.
+
+One example of a discernible but maybe-not-very-useful organizational
+pattern is the default tendency to name files along the data analysis
+pipeline like `01_setup`, `02_clean-data`, `03_model`, `04_tables-figs`,
+and `05_robustness`. But if you are taking care to write helpful litle
+functions, divide functionality into different files, and so on, this
+bears on your default organizational decisions. It becomes easier to
+understand the code and modify it. This benefits others, but it also
+benefits you as you develop and modify your own code.
+
+-   Organization: functions, not languages. For instance, in many
+    projects the language of my source code wasn't especially important,
+    but I still split my paper into folders like `R`, `stan`, and `tex`
+    when more *functional* organization could have been achieved.
+
+Organization and interface
+
+-   interface to useful concepts in the project: data, measures,
+    transformations, models.
+-   build the project out of small, re-usable components. This helps you
+    and others.
+-   interface not designed to depend on the paper's rhetorical flow.
+    Other people may not care about your paper in itself even if they
+    like your data, model, etc..
+
+### Judicious usage of "literate programming"
+
+This is both an interface issue and a modularity issue.
+
+> **It is "good" for statistical output to be algorithmically injected
+> into a research writeup.**
+
+This is the real reason why it is smart and effective to use technology
+like Rmarkdown (or, ugh, LaTeX) to prepare research papers or reports.
+But it is *also a problem* if the statistical code is so intertwined
+with a manuscript that they cannot be separated in the code. We need to
+be able to interface with the analysis without bringing the whole
+manuscript along for the ride. I have written plenty of "technically
+impressive" Rmarkdown documents that are actually are fragile Jenga
+towers of tangled functionality.
+
+Aspiration:
+
+-   Good science engages with good-intentioned scrutiny within the
+    community
+-   The aims of science are inherently collaborative rather than
+    combative---research projects provide tools for others to use. Right
+    now they're like a cake that you force-feed the audience and provide
+    the recipe just to assure tham that it wasn't poison.
+-   Key elements of the project may be reused and separated from the
+    analysis. This is good for the researcher, actually, because their
+    data is important for others' work.
+
+Today's replication archives are by and large shrewd self-protective
+constructs with no proactive vision for a better science
+
+-   They change very little about the way science is actually done.
+-   And that is because none of the ways that scientists dialogue with
+    them has been legitimized by the kingmaking process.
+-   Research is still brain-in-a-vat. Teams are rare. Work is not
+    broadly collaborative.
+-   Journals still don't entertain replication/extension work because it
+    isn't kingly, but the kingly stuff is untrustworthy, and the kings
+    keep the kingmakers fat on the spoils of prestige. Editors are
+    successful individuals under the current model, not revolutionaries.
+
+## Lessons from outside of academia.
+
+-   Your code has to run. This isn't optional. You have to ship your
+    code and enough environmental dressing to recreate it 100%.
+-   Your project provides an *interface* to the research. There is heavy
+    lifting done by some supporting scripts, but these scripts produce
+    endpoint objects that are manipulated in an epi-phenomenal way by
+    the research. Script prepares data, analysis analyzes data but
+    doesn't alter the script. If someone else wanted to do a different
+    analysis on the data, the library does not have to be ripped down in
+    order to accommodate those analyses.
+-   Pipeline: It isn't just raw data -\> cleaned data -\> analysis +
+    robustness. It's raw data -\> modular scripts that prepare
+    variables + modular scripts that control sampling -\> data tables at
+    various levels of aggregation that are useful to someone driving
+    some analysis -\> analysis
+-   Analyses themselves are modular w/r/t data prep. You are one of the
+    project's potentially many users, and you want your product to be
+    understood and potentially integrated into other projects. Contrast
+    to academia where *best case* scenario is that a package/library is
+    produced to run some model, exactly how it is designed in the paper.
+
+### What we haven't said
+
+Here's a recap of all the things we did not mention about replication /
+archiving discussions:
+
+-   Packaging environments and dependencies
+-   Relatedly, containerization
+-   Solutions for long-term archiving
+-   Commenting code
+
+These points get a lot more attention that the functional design of
+projects.
+
+### Are we making this into a more difficult software problem than it needs to be?
+
+Not if we take the job seriously.
+
+[^1]: It is also worth noting that merely *hiding* the messiness behing
+    a function isn't really the best way to proceed. What you want to
+    achieve by separating the implementation is some kind of abstraction
+    away from the particularities of your data into something simpler
+    and more principled. See this entertaining talk on the difference
+    between ["easy" and
+    "simple"](https://www.youtube.com/watch?v=SxdOUGdseq4).
+
+[^2]: Better yet, if the sorts of things you need to clean about the
+    names are the same things you would need to clean about other
+    strings, you could design the function to be abstracted away from
+    "names" altogether.
