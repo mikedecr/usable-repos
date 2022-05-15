@@ -10,7 +10,7 @@ subtitle: |
    Theses on software design and norms in quantitative social science 
 excerpt: |
 date: "2022-05-15"
-draft: true
+draft: false
 format: hugo
 ---
 
