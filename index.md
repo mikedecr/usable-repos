@@ -358,22 +358,15 @@ code. But as you iterate on the analysis, which requires breaking and
 changing things in your code, it can suddenly be very cumbersome to find
 and fix broken parts. This is because you have twisted all of the
 important steps together! You wrote the code in such a way that steps
-that do not depend on one another in principal have to be organized and
-executed in a strict order. And now the fix for one breakage leads you
-to break something else because the steps in your pipeline are not
-abstracted; instead they are too dependent on the exact configurations
-of the data in prior steps. It is just nice to avoid problems like this.
+that do not depend on one another in principal now have to be organized
+and executed in a strict order. And now the fix for one breakage leads
+you to break something else because the steps in your pipeline are not
+abstracted. It is just nice to avoid problems like this.
 
 To be clear, this is not the tidyverse's fault. The tidyverse is an
-exemplar of modular design. The major packages---dplyr, tidyr, tibble,
-forcats, stringr, purrr, etc.---do not *need each other* to work at the
-interface level. They all do different operations at different layers of
-abstraction on your data, and they can be combined in principle in
-almost arbitrary order, so you can put them anywhere. That's awesome.
-
-The problem is that you tried to string too much together without
-thinking about how to keep things smartly separated. We should be asking
-ourselves questions like,
+exemplar of modular design. The problem is that you tried to string too
+much together without thinking about how to keep things smartly
+separated. We should be asking ourselves questions like,
 
 -   What *operation* (read: function) do I need to do here, regardless
     of what my particular *data* look like? That is, think more about
@@ -401,7 +394,7 @@ If more pieces of your project are separable, interchangeable, and
 exportable, it becomes much easier to share little pieces of your
 project with other researchers.
 
-### Organization
+### There's organization, and then there's organization
 
 We know that our code should be organized, but it is easy to organize
 code ineffectively. Something we see a lot in research code is an
