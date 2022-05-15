@@ -143,12 +143,12 @@ aggregation, and I wrote a series of Stan files to iterate on a few
 approaches to it. Other projects I have seen before and after I finished
 my thesis have built similar models. Did I package my models into a tool
 that they could use? No, I did not. I also implemented a reweighting
-method for aggregated survey that I first saw in a paper from nearly a
-decade ago. This is probably a pretty broadly applicable correction for
-similar data, but did I provide a little module for others to apply the
-same calculations on data that wasn't exactly my own? Nah. I designed a
-Bayesian implementation of the [Acharya, Blackwell, and Sen formulation
-of sequential-*g*
+method for aggregated survey data that I first saw in a paper from
+nearly a decade ago. This is probably a pretty broadly applicable
+correction for similar data, but did I provide a little module for
+others to apply the same calculations on data that wasn't exactly my
+own? Nah. I designed a Bayesian implementation of the [Acharya,
+Blackwell, and Sen formulation of sequential-*g*
 estimator](https://www.cambridge.org/core/journals/american-political-science-review/article/abs/explaining-causal-findings-without-bias-detecting-and-assessing-direct-effects/D11BEB8666E913A0DCD7D0B9872F5D11)
 that addresses some of the things that Bayesians would care about in
 situations like that, and I would even say I was pretty proud of it. But
