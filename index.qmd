@@ -1,17 +1,10 @@
 ---
 author: Michael DeCrescenzo
-layout: single
-categories:
-tags:
-- bayes
-title: |
-    Replication code should be more usable.
-subtitle: |
-   Theses on software design and norms in quantitative social science 
-excerpt: |
+categories: [code]
+title: Replication code should be more usable.
 date: "2022-05-15"
 draft: false
-format: hugo
+image: "featured.png"
 ---
 
 ## Why do so many research projects' replication archives hurt?
