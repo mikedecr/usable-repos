@@ -1,10 +1,7 @@
 ---
 author: Michael DeCrescenzo
 categories: [code]
-title: |
-    Replication code should be more usable.
-# subtitle: Theses on software design and norms in quantitative social science 
-excerpt: |
+title: Replication code should be more usable.
 date: "2022-05-15"
 draft: false
 image: "featured.png"
